@@ -36,16 +36,15 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 // parameter indices
 enum Param
 {
-    stat,
-    enabledState,
-    timeConst
+    STAT,
+    TIME_CONST
 };
 
 // statistic option indices
 enum Statistic
 {
-    mean = 1,
-    stddev,
+    MEAN = 1,
+    STDDEV,
 };
 
 class ContinuousStats : public GenericProcessor
@@ -67,9 +66,6 @@ public:
 
     // handle changing number of channels
     void updateSettings() override;
-
-    void saveCustomChannelParametersToXml(XmlElement* channelElement, int channelNumber, InfoObjectCommon::InfoObjectType channelType) override;
-    void loadCustomChannelParametersFromXml(XmlElement* channelElement, InfoObjectCommon::InfoObjectType channelType) override;
          
 private:
     // which statistic is currently being calculated
@@ -77,8 +73,6 @@ private:
 
     // time constant in milliseconds
     double timeConstMs;
-
-    Array<bool> shouldProcessChannel;
 
     // state
     Array<double> currMean;

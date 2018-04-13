@@ -27,7 +27,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ContinuousStatsEditor::ContinuousStatsEditor(GenericProcessor* parentNode, bool useDefaultParameterEditors)
     : GenericEditor(parentNode, useDefaultParameterEditors)
 {
-    desiredWidth = 165;
+    desiredWidth = 155;
     ContinuousStats* processor = static_cast<ContinuousStats*>(parentNode);
 
     const int TEXT_HT = 18;
@@ -37,27 +37,18 @@ ContinuousStatsEditor::ContinuousStatsEditor(GenericProcessor* parentNode, bool 
     int yPos = 40;
 
     statBox = new ComboBox("stat");
-    statBox->addItem("MEAN", Statistic::mean);
-    statBox->addItem("STD DEV", Statistic::stddev);
+    statBox->addItem("MEAN", MEAN);
+    statBox->addItem("STD DEV", STDDEV);
     statBox->setSelectedId(processor->currStat, dontSendNotification);
-    statBox->setBounds(xPos, yPos, 90, 20);
+    statBox->setBounds(xPos + 15, yPos, 90, 20);
     statBox->addListener(this);
     addAndMakeVisible(statBox);
 
-    applyToChan = new UtilityButton("+CH", Font("Default", 10, Font::plain));
-    applyToChan->setBounds(xPos += 105, yPos + 2, 30, TEXT_HT);
-    applyToChan->setClickingTogglesState(true);
-    applyToChan->setToggleState(true, dontSendNotification);
-    applyToChan->setTooltip(APPLY_TO_CHAN_TOOLTIP);
-    applyToChan->addListener(this);
-    addAndMakeVisible(applyToChan);
-
     /* ------------- Bottom row (time const) ---------- */
-    xPos = LEFT_EDGE;
     yPos += 35;
 
     timeConstLabel = new Label("timeConstL", "Time constant:");
-    timeConstLabel->setBounds(xPos, yPos, 130, TEXT_HT + 2);
+    timeConstLabel->setBounds(xPos, yPos, 120, TEXT_HT + 2);
     timeConstLabel->setFont(Font("Small Text", 14, Font::plain));
     timeConstLabel->setColour(Label::textColourId, Colours::darkgrey);
     timeConstLabel->setTooltip(TIME_CONST_TOOLTIP);
@@ -87,7 +78,7 @@ ContinuousStatsEditor::~ContinuousStatsEditor() {}
 void ContinuousStatsEditor::comboBoxChanged(ComboBox* comboBoxThatHasChanged)
 {
     if (comboBoxThatHasChanged == statBox)
-        getProcessor()->setParameter(Param::stat, static_cast<float>(statBox->getSelectedId()));
+        getProcessor()->setParameter(STAT, static_cast<float>(statBox->getSelectedId()));
 }
 
 void ContinuousStatsEditor::labelTextChanged(Label* labelThatHasChanged)
@@ -100,32 +91,8 @@ void ContinuousStatsEditor::labelTextChanged(Label* labelThatHasChanged)
         bool success = updateFloatLabel(labelThatHasChanged, 0.01F, FLT_MAX, static_cast<float>(processor->timeConstMs), &newVal);
 
         if (success)
-            processor->setParameter(Param::timeConst, newVal);
+            processor->setParameter(TIME_CONST, newVal);
     }
-}
-
-void ContinuousStatsEditor::buttonEvent(Button* button)
-{
-    if (button == applyToChan)
-    {
-        ContinuousStats* processor = static_cast<ContinuousStats*>(getProcessor());
-
-        float newValue = button->getToggleState() ? 1.0F : 0.0F;
-
-        // apply to active channels
-        Array<int> chans = getActiveChannels();
-        for (int i = 0; i < chans.size(); ++i)
-        {
-            processor->setCurrentChannel(chans[i]);
-            processor->setParameter(Param::enabledState, newValue);
-        }
-    }
-}
-
-void ContinuousStatsEditor::channelChanged(int chan, bool newState)
-{
-    ContinuousStats* processor = static_cast<ContinuousStats*>(getProcessor());
-    applyToChan->setToggleState(processor->shouldProcessChannel[chan], dontSendNotification);
 }
 
 void ContinuousStatsEditor::saveCustomParameters(XmlElement* xml)

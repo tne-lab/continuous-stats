@@ -27,7 +27,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 ContinuousStats::ContinuousStats()
     : GenericProcessor  ("Continuous Stats")
-    , currStat          (Statistic::mean)
+    , currStat          (MEAN)
     , timeConstMs       (1000.0)
 {
     setProcessorType(PROCESSOR_TYPE_FILTER);
@@ -46,13 +46,12 @@ void ContinuousStats::process(AudioSampleBuffer& continuousBuffer)
     int nChannels = continuousBuffer.getNumChannels();
     Statistic stat = currStat;
 
-    for (int chan = 0; chan < nChannels; ++chan)
+    Array<int> activeChannels = editor->getActiveChannels();
+    int numActiveChannels = activeChannels.size();
+    for (int i = 0; i < numActiveChannels; ++i)
     {
+        int chan = activeChannels[i];
         int nSamples = getNumSamples(chan);
-
-        // "+CH" button
-        if (!shouldProcessChannel[chan] || nSamples == 0)
-            continue;
 
         double samplesPerMs = getDataChannel(chan)->getSampleRate() / 1000.0;
         double mean, var;
@@ -64,7 +63,7 @@ void ContinuousStats::process(AudioSampleBuffer& continuousBuffer)
         {
             mean = continuousBuffer.getSample(chan, samp);
             var = 0.0;
-            continuousBuffer.setSample(chan, samp, static_cast<float>(stat == Statistic::mean ? mean : std::sqrt(var)));
+            continuousBuffer.setSample(chan, samp, static_cast<float>(stat == MEAN ? mean : std::sqrt(var)));
             startingRunningMean.set(chan, false);
             ++samp;
         }
@@ -83,7 +82,7 @@ void ContinuousStats::process(AudioSampleBuffer& continuousBuffer)
             delta = continuousBuffer.getSample(chan, samp) - mean;
             mean += alpha * delta;
             var = (1 - alpha) * (var + alpha * std::pow(delta, 2));
-            continuousBuffer.setSample(chan, samp, static_cast<float>(stat == Statistic::mean ? mean : std::sqrt(var)));
+            continuousBuffer.setSample(chan, samp, static_cast<float>(stat == MEAN ? mean : std::sqrt(var)));
         }
 
         // save for next buffer
@@ -105,59 +104,30 @@ void ContinuousStats::setParameter(int parameterIndex, float newValue)
 {
     switch (parameterIndex)
     {
-    case Param::stat:
+    case STAT:
         currStat = static_cast<Statistic>(static_cast<int>(newValue));
         break;
 
-    case Param::timeConst:
+    case TIME_CONST:
         timeConstMs = newValue;
-        break;
-
-    case Param::enabledState:
-        startingRunningMean.set(currentChannel, true);
-        shouldProcessChannel.set(currentChannel, newValue == 0 ? false : true);
         break;
     }
 }
 
 void ContinuousStats::updateSettings()
 {
-    int numInputsChange = getNumInputs() - shouldProcessChannel.size();
+    int numInputsChange = getNumInputs() - currMean.size();
 
     if (numInputsChange > 0)
     {
-        shouldProcessChannel.insertMultiple(-1, true, numInputsChange);
         currMean.insertMultiple(-1, 0.0, numInputsChange);
         currVar.insertMultiple(-1, 0.0, numInputsChange);
         startingRunningMean.insertMultiple(-1, true, numInputsChange);
     }
     else if (numInputsChange < 0)
     {
-        shouldProcessChannel.removeLast(-numInputsChange);
         currMean.removeLast(-numInputsChange);
         currVar.removeLast(-numInputsChange);
         startingRunningMean.removeLast(-numInputsChange);
-    }
-}
-
-void ContinuousStats::saveCustomChannelParametersToXml(XmlElement* channelElement, int channelNumber, InfoObjectCommon::InfoObjectType channelType)
-{
-    if (channelType == InfoObjectCommon::DATA_CHANNEL)
-    {
-        XmlElement* channelParams = channelElement->createNewChildElement("PARAMETERS");
-        channelParams->setAttribute("shouldProcess", shouldProcessChannel[channelNumber]);
-    }
-}
-
-void ContinuousStats::loadCustomChannelParametersFromXml(XmlElement* channelElement, InfoObjectCommon::InfoObjectType channelType)
-{
-    int channelNum = channelElement->getIntAttribute("number");
-
-    forEachXmlChildElement(*channelElement, subnode)
-    {
-        if (subnode->hasTagName("PARAMETERS"))
-        {
-            shouldProcessChannel.set(channelNum, subnode->getBoolAttribute("shouldProcess", true));
-        }
     }
 }

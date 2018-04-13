@@ -27,9 +27,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include <EditorHeaders.h>
 #include "ContinuousStats.h"
 
-#define APPLY_TO_CHAN_TOOLTIP "Turn processing of selected channels on or off"
-#define TIME_CONST_TOOLTIP "Time for the influence of a single sample to decay to 36.8% (1/e) of its initial value (larger = smoother, smaller = more local)"
-
 class ContinuousStatsEditor : public GenericEditor, public ComboBox::Listener, public Label::Listener
 {
 public:
@@ -41,12 +38,6 @@ public:
 
     // implements Label::Listener
     void labelTextChanged(Label* labelThatHasChanged) override;
-
-    // overrides GenericEditor
-    void buttonEvent(Button* button) override;
-
-    // update display based on current channel
-    void channelChanged(int chan, bool newState) override;
 
     void saveCustomParameters(XmlElement* xml) override;
     void loadCustomParameters(XmlElement* xml) override;
@@ -64,12 +55,15 @@ private:
     // UI elements
     // Row 1
     ScopedPointer<ComboBox>      statBox;
-    ScopedPointer<UtilityButton> applyToChan;
 
     // Row 2
     ScopedPointer<Label> timeConstLabel;
     ScopedPointer<Label> timeConstEditable;
     ScopedPointer<Label> timeConstUnit;
+
+    // constants
+    const String APPLY_TO_CHAN_TOOLTIP = "Turn processing of selected channels on or off";
+    const String TIME_CONST_TOOLTIP = "Time for the influence of a single sample to decay to 36.8% (1/e) of its initial value (larger = smoother, smaller = more local)";
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(ContinuousStatsEditor);
 };
