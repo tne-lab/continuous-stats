@@ -4,7 +4,7 @@ Plugin for the Open Ephys GUI to compute the exponentially weighted sliding mean
 ## Installing:
 
 * All platforms: Copy contents of "Source" into a new folder in your "Source/Plugins" called "ContinuousStats".
-* Windows: Copy contents of "Builds/VisualStudio2013" into a new folder in your "Builds/VisualStudio2013/Plugins" called "ContinuousStats". Then build as usual in Visual Studio.
+* Windows: Copy contents of "Builds/VisualStudio2013" into a new folder in your "Builds/VisualStudio2013/Plugins" called "ContinuousStats". In Visual Studio, with the Plugins solution open, right-click the solution, go to Add->Existing Project, then select the ContinuousStats.vcxproj file you just copied to add the new plugin. Then build as usual in Visual Studio.
 * Linux: Use `make` to compile as usual.
 * Mac: Not currently implemented, but should be easy to setup as a standard plugin in XCode.
 
