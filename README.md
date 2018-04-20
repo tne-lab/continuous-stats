@@ -1,6 +1,8 @@
 # Continuous Statistics Plugin
 Plugin for the Open Ephys GUI to compute the exponentially weighted sliding mean or standard deviation of incoming continuous data.
 
+![Editor](cs_front.png)
+
 ## Installing:
 
 * All platforms: Copy contents of "Source" into a new folder in your "Source/Plugins" called "ContinuousStats".
