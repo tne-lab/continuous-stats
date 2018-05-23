@@ -43,18 +43,17 @@ public:
     void loadCustomParameters(XmlElement* xml) override;
 
 private:
-    // utility for label listening
-    // ouputs whether the label contained a valid input; if so, it is stored in *result.
-    static bool updateFloatLabel(Label* labelThatHasChanged,
-        float minValue, float maxValue, float defaultValue, float* result);
-
-    // Attempt to parse an input string into a float between min and max, inclusive.
-    // Returns false if no integer could be parsed.
-    static bool parseInput(String& in, float min, float max, float* out);
+    /*
+     * Ouputs whether the label contained a valid input; if so, it is stored in *out
+     * and the label is updated with the parsed input. Otherwise, the label is reset
+     * to defaultValue.
+     */
+    static bool updateFloatLabel(Label* label, float min, float max,
+        float defaultValue, float* out);
 
     // UI elements
     // Row 1
-    ScopedPointer<ComboBox>      statBox;
+    ScopedPointer<ComboBox> statBox;
 
     // Row 2
     ScopedPointer<Label> timeConstLabel;

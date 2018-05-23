@@ -67,7 +67,8 @@ void ContinuousStats::process(AudioSampleBuffer& continuousBuffer)
             startingRunningMean.set(chan, false);
             ++samp;
         }
-        else {
+        else 
+        {
             mean = currMean[chan];
             var = currVar[chan];
         }
@@ -95,8 +96,9 @@ bool ContinuousStats::disable()
 {
     // reset state
     for (int i = 0; i < startingRunningMean.size(); ++i)
+    {
         startingRunningMean.set(i, true);
-
+    }
     return true;
 }
 

@@ -23,6 +23,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "ContinuousStatsEditor.h"
 #include <string> // stof
+#include <cfloat> // FLT_MAX
 
 ContinuousStatsEditor::ContinuousStatsEditor(GenericProcessor* parentNode, bool useDefaultParameterEditors)
     : GenericEditor(parentNode, useDefaultParameterEditors)
@@ -78,7 +79,9 @@ ContinuousStatsEditor::~ContinuousStatsEditor() {}
 void ContinuousStatsEditor::comboBoxChanged(ComboBox* comboBoxThatHasChanged)
 {
     if (comboBoxThatHasChanged == statBox)
+    {
         getProcessor()->setParameter(STAT, static_cast<float>(statBox->getSelectedId()));
+    }
 }
 
 void ContinuousStatsEditor::labelTextChanged(Label* labelThatHasChanged)
@@ -91,7 +94,9 @@ void ContinuousStatsEditor::labelTextChanged(Label* labelThatHasChanged)
         bool success = updateFloatLabel(labelThatHasChanged, 0.01F, FLT_MAX, static_cast<float>(processor->timeConstMs), &newVal);
 
         if (success)
+        {
             processor->setParameter(TIME_CONST, newVal);
+        }
     }
 }
 
@@ -117,37 +122,23 @@ void ContinuousStatsEditor::loadCustomParameters(XmlElement* xml)
 
 // static utilities
 
-bool ContinuousStatsEditor::updateFloatLabel(Label* labelThatHasChanged,
-    float minValue, float maxValue, float defaultValue, float* result)
+bool ContinuousStatsEditor::updateFloatLabel(Label* label, float min, float max,
+    float defaultValue, float* out)
 {
-    String& input = labelThatHasChanged->getText();
-    bool valid = parseInput(input, minValue, maxValue, result);
-    if (!valid)
-        labelThatHasChanged->setText(String(defaultValue), dontSendNotification);
-    else
-        labelThatHasChanged->setText(String(*result), dontSendNotification);
-
-    return valid;
-}
-
-bool ContinuousStatsEditor::parseInput(String& in, float min, float max, float* out)
-{
+    const String& in = label->getText();
     float parsedFloat;
     try
     {
         parsedFloat = std::stof(in.toRawUTF8());
     }
-    catch (...)
+    catch (const std::logic_error&)
     {
+        label->setText(String(defaultValue), dontSendNotification);
         return false;
     }
 
-    if (parsedFloat < min)
-        *out = min;
-    else if (parsedFloat > max)
-        *out = max;
-    else
-        *out = parsedFloat;
+    *out = jmax(min, jmin(max, parsedFloat));
 
+    label->setText(String(*out), dontSendNotification);
     return true;
 }
