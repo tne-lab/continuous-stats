@@ -1,4 +1,5 @@
-# Continuous Statistics Plugin
+# Continuous Statistics Plugin [![DOI](https://zenodo.org/badge/127811570.svg)](https://zenodo.org/badge/latestdoi/127811570)
+
 Plugin for the Open Ephys GUI to compute the exponentially weighted sliding mean or standard deviation of incoming continuous data.
 
 ![Editor](cs_front.png)
