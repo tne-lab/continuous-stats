@@ -4,11 +4,21 @@ Plugin for the Open Ephys GUI to compute the exponentially weighted sliding mean
 
 ![Editor](cs_front.png)
 
-## Installing:
+## Installing with CMake:
 
-* All platforms: Copy contents of "Source" into a new folder in your "Source/Plugins" called "ContinuousStats".
-* Windows: Copy contents of "Builds/VisualStudio2013" into a new folder in your "Builds/VisualStudio2013/Plugins" called "ContinuousStats". In Visual Studio, with the Plugins solution open, right-click the solution, go to Add->Existing Project, then select the ContinuousStats.vcxproj file you just copied to add the new plugin. Then build as usual in Visual Studio.
-* Linux: Use `make` to compile as usual.
+This plugin can now be built outside of the main GUI file tree using CMake. In order to do so, it must be in a sibling directory to plugin-GUI\* and the main GUI must have already been compiled.
+
+If you are already using CMake to build the *main GUI* (in development as of writing), you should switch to the `cmake-gui` branch to get the compatible plugin CMake build file.
+
+See `ContinuousStats/CMAKE_README.txt` and/or the wiki page [here](https://open-ephys.atlassian.net/wiki/spaces/OEW/pages/1259110401/Plugin+CMake+Builds) for build instructions.
+
+\* If you have the GUI built somewhere else, you can specify its location by setting the environment variable `GUI_BASE_DIR` or defining it when calling cmake with the option `-DGUI_BASE_DIR=<location>`.
+
+## Installing without CMake:
+
+* All platforms: Copy contents of "ContinuousStats/Source" into a new folder in your "Source/Plugins" called "ContinuousStats".
+* Windows: Copy contents of "ContinuousStats/LegacyBuildVS2013" into a new folder in your "Builds/VisualStudio2013/Plugins" called "ContinuousStats". In Visual Studio, with the Plugins solution open, right-click the solution, go to Add->Existing Project, then select the ContinuousStats.vcxproj file you just copied to add the new plugin. Then build as usual in Visual Studio.
+* Linux: Use `make -f Makefile.plugins` to compile as usual.
 * Mac: Not currently implemented, but should be easy to setup as a standard plugin in XCode.
 
 ## Usage:
