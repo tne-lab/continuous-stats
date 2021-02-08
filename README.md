@@ -8,7 +8,7 @@ Plugin for the Open Ephys GUI to compute the exponentially weighted sliding mean
 
 This plugin can now be built outside of the main GUI file tree using CMake. In order to do so, it must be in a sibling directory to plugin-GUI\* and the main GUI must have already been compiled.
 
-You should use this branch if you are already using CMake to build the *main GUI* (in development as of writing). Otherwise, use the `master` branch.
+You should use this branch if you are already using CMake to build the *old GUI* (in development as of writing). Otherwise, use the `master` branch.
 
 See `ContinuousStats/CMAKE_README.txt` and/or the wiki page [here](https://open-ephys.atlassian.net/wiki/spaces/OEW/pages/1259110401/Plugin+CMake+Builds) for build instructions.
 
